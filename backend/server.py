@@ -1316,12 +1316,6 @@ async def admin_qa_del(qid: str, _=Depends(require_admin)):
     await db.quick_access.delete_one({"id": qid})
     return {"ok": True}
 
-# Static assets (Play Store icons, etc.)
-from fastapi.staticfiles import StaticFiles
-_static_dir = ROOT_DIR / "static"
-_static_dir.mkdir(exist_ok=True)
-app.mount("/api/static", StaticFiles(directory=str(_static_dir)), name="static")
-
 # Include router
 app.include_router(api_router)
 
