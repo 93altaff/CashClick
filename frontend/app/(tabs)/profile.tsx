@@ -1,14 +1,15 @@
 // Profile tab — username + mobile (left), animated mascot (right), quick access grid, admin login.
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  View, Text, StyleSheet, ScrollView, Pressable, Image, Animated, Easing, Linking, Alert,
+  View, Text, StyleSheet, ScrollView, Pressable, Animated, Easing, Linking, Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { colors, fonts, MASCOT_URL, radius, shadows, spacing } from "@/src/theme";
+import { colors, fonts, radius, shadows, spacing } from "@/src/theme";
 import { api } from "@/src/api";
 import { getDeviceId, loadUser, clearSession } from "@/src/auth";
+import LogoVideo from "@/src/components/LogoVideo";
 
 const APP_VERSION = "1.0.0";
 
@@ -67,7 +68,7 @@ export default function ProfileTab() {
             </View>
           </View>
           <Animated.View style={{ transform: [{ rotate: tilt }, { scale }] }}>
-            <Image source={{ uri: MASCOT_URL }} style={styles.mascot} resizeMode="contain" />
+            <LogoVideo size={96} borderRadius={24} testID="profile-mascot" />
             <View style={styles.hiBubble}><Text style={styles.hiText}>Hi! 👋</Text></View>
           </Animated.View>
         </View>

@@ -2,10 +2,10 @@
 import { useEffect } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import { colors, fonts } from "@/src/theme";
 import { getDeviceId, saveUser, loadUser } from "@/src/auth";
 import { api } from "@/src/api";
+import LogoVideo from "@/src/components/LogoVideo";
 
 export default function Index() {
   const router = useRouter();
@@ -33,9 +33,7 @@ export default function Index() {
 
   return (
     <View style={styles.container} testID="splash-screen">
-      <View style={styles.logo}>
-        <Feather name="dollar-sign" size={56} color="#fff" />
-      </View>
+      <LogoVideo size={140} borderRadius={32} testID="splash-logo" />
       <Text style={styles.brand}>CashClick</Text>
       <Text style={styles.tagline}>Earn while you play</Text>
       <ActivityIndicator color={colors.primary} style={{ marginTop: 24 }} />

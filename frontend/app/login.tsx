@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { colors, fonts, radius, shadows, spacing } from "@/src/theme";
 import { getDeviceId, saveUser } from "@/src/auth";
 import { api } from "@/src/api";
+import LogoVideo from "@/src/components/LogoVideo";
 
 export default function Login() {
   const router = useRouter();
@@ -67,9 +68,7 @@ export default function Login() {
       >
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <View style={styles.logoWrap}>
-            <View style={styles.logo}>
-              <Feather name="dollar-sign" size={42} color="#fff" />
-            </View>
+            <LogoVideo size={84} borderRadius={22} testID="login-logo" />
           </View>
           <Text style={styles.brand}>CashClick</Text>
           <Text style={styles.welcome}>

@@ -3,6 +3,7 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { colors, fonts, spacing } from "@/src/theme";
+import LogoVideo from "@/src/components/LogoVideo";
 
 type Props = { username: string; points: number; showLogo?: boolean; onPointsPress?: () => void };
 
@@ -11,9 +12,7 @@ export default function TopBar({ username, points, showLogo = true, onPointsPres
     <View style={styles.bar}>
       <View style={styles.left}>
         {showLogo ? (
-          <View style={styles.logo}>
-            <Feather name="dollar-sign" size={20} color="#fff" />
-          </View>
+          <LogoVideo size={40} borderRadius={12} testID="topbar-logo" />
         ) : null}
         <View>
           <Text style={styles.hi}>Hi,</Text>
