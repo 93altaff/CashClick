@@ -1,17 +1,19 @@
 // Task detail screen with form submission
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator, Alert, Modal } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, ActivityIndicator, Alert, Modal, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { colors, fonts, radius, shadows, spacing } from "@/src/theme";
 import { api } from "@/src/api";
 import { getDeviceId } from "@/src/auth";
+import TutorialVideo from "@/src/components/TutorialVideo";
 
 export default function TaskDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [task, setTask] = useState<any>(null);
+  const [supportUrl, setSupportUrl] = useState<string>("");
   const [show, setShow] = useState(false);
   const [data, setData] = useState<Record<string, string>>({});
   const [confirm, setConfirm] = useState(false);
@@ -20,8 +22,12 @@ export default function TaskDetail() {
   const load = async () => {
     const did = await getDeviceId();
     try {
-      const t = await api.get(`/tasks/${id}?device_id=${encodeURIComponent(did)}`);
+      const [t, cfg] = await Promise.all([
+        api.get(`/tasks/${id}?device_id=${encodeURIComponent(did)}`),
+        api.get(`/config`),
+      ]);
       setTask(t);
+      setSupportUrl(cfg?.support_url || "");
     } catch (e: any) { Alert.alert("Error", e.message); }
   };
 
@@ -61,14 +67,14 @@ export default function TaskDetail() {
 
         {task.tutorial_url ? (
           <SectionCard title="Tutorial Video" icon="play-circle">
-            <Pressable style={styles.linkBtn} onPress={() => Alert.alert("Tutorial", task.tutorial_url)}>
-              <Feather name="external-link" size={16} color={colors.primary} />
-              <Text style={styles.linkText}>Watch tutorial</Text>
-            </Pressable>
+            <TutorialVideo url={task.tutorial_url} height={200} />
           </SectionCard>
         ) : null}
 
-        <Pressable testID="task-help-btn" style={styles.helpBtn} onPress={() => Alert.alert("Get Help", "Contact support via Profile → Help & Support")}>
+        <Pressable testID="task-help-btn" style={styles.helpBtn} onPress={() => {
+          if (supportUrl) Linking.openURL(supportUrl).catch(() => Alert.alert("Cannot open", supportUrl));
+          else Alert.alert("Get Help", "Support is not configured yet.");
+        }}>
           <Feather name="help-circle" size={16} color={colors.textSecondary} />
           <Text style={styles.helpText}>Get Help</Text>
         </Pressable>

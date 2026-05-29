@@ -73,12 +73,18 @@ export default function ProfileTab() {
           </Animated.View>
         </View>
 
-        <Text style={styles.sectionTitle}>Quick Access</Text>
-        <View style={styles.qaGrid}>
+        <Text style={styles.sectionTitle}>As Your Needs</Text>
+        <View style={styles.qaList}>
           {qa.map((q) => (
-            <Pressable key={q.id} testID={`profile-qa-${q.label}`} style={styles.qaCard} onPress={() => handleQA(q.url)}>
+            <Pressable
+              key={q.id}
+              testID={`profile-qa-${q.label}`}
+              style={({ pressed }) => [styles.qaRow, pressed && { opacity: 0.7 }]}
+              onPress={() => handleQA(q.url)}
+            >
               <View style={styles.qaIcon}><Feather name={q.icon as any} size={20} color={colors.primary} /></View>
-              <Text style={styles.qaLabel}>{q.label}</Text>
+              <Text style={styles.qaLabel} numberOfLines={1}>{q.label}</Text>
+              <Feather name="chevron-right" size={20} color={colors.textTertiary} />
             </Pressable>
           ))}
         </View>
@@ -128,10 +134,14 @@ const styles = StyleSheet.create({
   statValue: { fontFamily: fonts.heading, color: colors.primaryDark, fontSize: 12 },
   statLabel: { fontFamily: fonts.regular, color: colors.primaryDark, fontSize: 10 },
   sectionTitle: { fontFamily: fonts.heading, fontSize: 18, color: colors.textPrimary, paddingHorizontal: spacing.lg, marginTop: spacing.xl, marginBottom: spacing.md },
-  qaGrid: { flexDirection: "row", flexWrap: "wrap", paddingHorizontal: spacing.lg, gap: spacing.md },
-  qaCard: { width: "47%", backgroundColor: colors.surface, padding: 16, borderRadius: radius.image, borderWidth: 1, borderColor: colors.border, alignItems: "center", gap: 8 },
-  qaIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.primaryLight, alignItems: "center", justifyContent: "center" },
-  qaLabel: { fontFamily: fonts.heading, fontSize: 13, color: colors.textPrimary },
+  qaList: { paddingHorizontal: spacing.lg, gap: 10 },
+  qaRow: {
+    flexDirection: "row", alignItems: "center", gap: 12,
+    backgroundColor: colors.surface, paddingHorizontal: 14, paddingVertical: 14,
+    borderRadius: radius.image, borderWidth: 1, borderColor: colors.border,
+  },
+  qaIcon: { width: 40, height: 40, borderRadius: 12, backgroundColor: colors.primaryLight, alignItems: "center", justifyContent: "center" },
+  qaLabel: { flex: 1, fontFamily: fonts.heading, fontSize: 14, color: colors.textPrimary },
   adminWrap: { paddingHorizontal: spacing.lg, marginTop: spacing.xl, gap: 8 },
   adminBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 14, backgroundColor: colors.surface, borderRadius: radius.button, borderWidth: 1, borderColor: colors.border },
   logoutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 14, backgroundColor: colors.surface, borderRadius: radius.button, borderWidth: 1, borderColor: "#FEE2E2" },

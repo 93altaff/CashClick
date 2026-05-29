@@ -171,6 +171,7 @@ DEFAULT_CONFIG = {
         "rewarded": {"android": "", "ios": ""},
         "native": {"android": "", "ios": ""},
     },
+    "support_url": "https://t.me/cashclick_support",
     "app_version": "1.0.0",
     "force_update": False,
 }
@@ -1154,7 +1155,10 @@ async def admin_task_sub_action(data: TaskActionIn, _=Depends(require_admin)):
         if sub["status"] == "approved":
             return {"ok": True}
         await db.task_submissions.update_one({"id": data.submission_id}, {"$set": {"status": "approved", "processed_at": now_utc().isoformat()}})
-        await add_transaction(sub["device_id"], sub["reward"], "task", sub["task_title"], "Task approved")
+        cfg = await db.config.find_one({"key": "app"}, {"_id": 0}) or DEFAULT_CONFIG
+        rate = int(cfg.get("conversion_rate", 100))
+        pts = int(sub["reward"]) * rate  # task.reward is stored in ₹, credit as points
+        await add_transaction(sub["device_id"], pts, "task", sub["task_title"], f"Task approved (₹{sub['reward']})")
         await maybe_qualify_referral(sub["device_id"])
     elif data.action == "reject":
         await db.task_submissions.update_one({"id": data.submission_id}, {"$set": {"status": "rejected", "processed_at": now_utc().isoformat()}})
@@ -1262,6 +1266,7 @@ class ConfigPatchIn(BaseModel):
     withdraw_chips: Optional[List[int]] = None
     min_withdraw: Optional[int] = None
     ad_config: Optional[Dict[str, Any]] = None
+    support_url: Optional[str] = None
     app_version: Optional[str] = None
     force_update: Optional[bool] = None
 

@@ -120,12 +120,12 @@ export default function HomeTab() {
                 onPress={() => router.push(`/games/${g.id}` as any)}
               >
                 <View style={[styles.gameThumb, { backgroundColor: g.color + "20" }]}>
-                  <Feather name={g.icon as any} size={32} color={g.color} />
+                  <Feather name={g.icon as any} size={26} color={g.color} />
                 </View>
-                <View style={{ paddingHorizontal: 10, paddingBottom: 10, paddingTop: 8 }}>
+                <View style={{ paddingHorizontal: 8, paddingBottom: 8, paddingTop: 6 }}>
                   <Text style={styles.gameName} numberOfLines={1}>{g.name}</Text>
                   <View style={styles.gameMeta}>
-                    <Text style={styles.gameReward}>+{g.reward_min}-{g.reward_max} pts</Text>
+                    <Text style={styles.gameReward} numberOfLines={1}>+{g.reward_min}-{g.reward_max}</Text>
                     <View style={[styles.chancePill, g.chances_left <= 0 && { backgroundColor: "#FEE2E2" }]}>
                       <Text style={[styles.chanceText, g.chances_left <= 0 && { color: colors.error }]}>{g.chances_left}/{g.chances}</Text>
                     </View>
@@ -140,7 +140,7 @@ export default function HomeTab() {
   );
 }
 
-const CARD_W = (SCREEN_W - spacing.lg * 2 - spacing.md) / 2;
+const CARD_W = (SCREEN_W - spacing.lg * 2 - spacing.md * 2) / 3;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
@@ -161,10 +161,10 @@ const styles = StyleSheet.create({
     width: CARD_W, backgroundColor: colors.surface, borderRadius: radius.card,
     borderWidth: 1, borderColor: colors.border, overflow: "hidden", ...shadows.light,
   },
-  gameThumb: { height: 100, alignItems: "center", justifyContent: "center" },
-  gameName: { fontFamily: fonts.heading, fontSize: 14, color: colors.textPrimary },
+  gameThumb: { height: 70, alignItems: "center", justifyContent: "center" },
+  gameName: { fontFamily: fonts.heading, fontSize: 11, color: colors.textPrimary },
   gameMeta: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 4 },
-  gameReward: { fontFamily: fonts.body, fontSize: 11, color: colors.primary },
-  chancePill: { backgroundColor: colors.primaryLight, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 100 },
-  chanceText: { fontFamily: fonts.heading, fontSize: 10, color: colors.primaryDark },
+  gameReward: { fontFamily: fonts.body, fontSize: 9, color: colors.primary, flex: 1 },
+  chancePill: { backgroundColor: colors.primaryLight, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 100 },
+  chanceText: { fontFamily: fonts.heading, fontSize: 9, color: colors.primaryDark },
 });

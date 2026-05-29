@@ -52,14 +52,17 @@ export default function WalletTab() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await load(filter); setRefreshing(false); }} />}
       >
         <View style={styles.balanceCard} testID="wallet-balance-card">
-          <Text style={styles.balLabel}>Total Balance</Text>
+          <View style={styles.balTopRow}>
+            <Text style={styles.balLabel}>Total Balance</Text>
+            <Pressable testID="wallet-withdraw-btn" style={styles.withdrawTopBtn} onPress={() => router.push("/withdraw" as any)}>
+              <Feather name="arrow-up-right" size={14} color="#fff" />
+              <Text style={styles.withdrawTopText}>Withdraw</Text>
+            </Pressable>
+          </View>
           <Text style={styles.balRupee}>₹{bal?.rupees?.toFixed(2) || "0.00"}</Text>
-          <Text style={styles.balPts}>{(bal?.points || 0).toLocaleString()} points</Text>
-          <Text style={styles.balRate}>{bal?.conversion_rate || 100} pts = ₹1</Text>
-          <Pressable testID="wallet-withdraw-btn" style={styles.withdrawBtn} onPress={() => router.push("/withdraw" as any)}>
-            <Feather name="arrow-up-right" size={18} color={colors.primaryDark} />
-            <Text style={styles.withdrawText}>Withdraw</Text>
-          </Pressable>
+          <Text style={styles.balMetaLine}>
+            {(bal?.points || 0).toLocaleString()} points  •  {bal?.conversion_rate || 100} pts = ₹1
+          </Text>
         </View>
 
         <Text style={styles.sectionTitle}>Transaction History</Text>
@@ -111,14 +114,14 @@ const styles = StyleSheet.create({
     borderRadius: radius.card, ...shadows.heavy,
   },
   balLabel: { fontFamily: fonts.body, color: "rgba(255,255,255,0.75)", fontSize: 12, letterSpacing: 1 },
-  balRupee: { fontFamily: fonts.heading, color: "#fff", fontSize: 44, marginTop: 8, letterSpacing: -1 },
-  balPts: { fontFamily: fonts.body, color: "rgba(255,255,255,0.9)", marginTop: 4 },
-  balRate: { fontFamily: fonts.regular, color: "rgba(255,255,255,0.7)", fontSize: 11, marginTop: 4 },
-  withdrawBtn: {
-    marginTop: spacing.lg, backgroundColor: "#fff", borderRadius: radius.button, paddingVertical: 14,
-    alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8,
+  balTopRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  withdrawTopBtn: {
+    flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 7,
+    backgroundColor: "rgba(255,255,255,0.18)", borderRadius: 100, borderWidth: 1, borderColor: "rgba(255,255,255,0.35)",
   },
-  withdrawText: { fontFamily: fonts.heading, color: colors.primaryDark, fontSize: 15 },
+  withdrawTopText: { fontFamily: fonts.heading, color: "#fff", fontSize: 12 },
+  balRupee: { fontFamily: fonts.heading, color: "#fff", fontSize: 44, marginTop: 8, letterSpacing: -1 },
+  balMetaLine: { fontFamily: fonts.body, color: "rgba(255,255,255,0.85)", fontSize: 13, marginTop: 6 },
   sectionTitle: { fontFamily: fonts.heading, fontSize: 18, color: colors.textPrimary, paddingHorizontal: spacing.lg, marginTop: spacing.xl, marginBottom: spacing.md },
   filterRow: { paddingHorizontal: spacing.lg, gap: 8, paddingBottom: spacing.md },
   chip: { paddingHorizontal: 14, paddingVertical: 8, backgroundColor: colors.surfaceVariant, borderRadius: 100 },

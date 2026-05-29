@@ -1,24 +1,32 @@
 // Campaign detail — user confirms payment received → creates transaction tagged campaign.
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, Alert, Modal } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, Alert, Modal, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { colors, fonts, radius, shadows, spacing } from "@/src/theme";
 import { api } from "@/src/api";
 import { getDeviceId } from "@/src/auth";
+import TutorialVideo from "@/src/components/TutorialVideo";
 
 export default function CampaignDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [c, setC] = useState<any>(null);
+  const [supportUrl, setSupportUrl] = useState<string>("");
   const [started, setStarted] = useState(false);
   const [confirm, setConfirm] = useState(false);
 
   useEffect(() => {
     (async () => {
-      try { setC(await api.get(`/campaigns/${id}`)); }
-      catch (e: any) { Alert.alert("Error", e.message); }
+      try {
+        const [data, cfg] = await Promise.all([
+          api.get(`/campaigns/${id}`),
+          api.get(`/config`),
+        ]);
+        setC(data);
+        setSupportUrl(cfg?.support_url || "");
+      } catch (e: any) { Alert.alert("Error", e.message); }
     })();
   }, [id]);
 
@@ -53,7 +61,17 @@ export default function CampaignDetail() {
           <Text style={styles.body}>{c.rules}</Text>
         </View>
 
-        <Pressable testID="campaign-help-btn" style={styles.helpBtn} onPress={() => Alert.alert("Get Help", "Contact support via Profile → Help & Support")}>
+        {c.tutorial_url ? (
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHead}><Feather name="play-circle" size={16} color={colors.primary} /><Text style={styles.sectionTitle}>Tutorial Video</Text></View>
+            <TutorialVideo url={c.tutorial_url} height={200} />
+          </View>
+        ) : null}
+
+        <Pressable testID="campaign-help-btn" style={styles.helpBtn} onPress={() => {
+          if (supportUrl) Linking.openURL(supportUrl).catch(() => Alert.alert("Cannot open", supportUrl));
+          else Alert.alert("Get Help", "Support is not configured yet.");
+        }}>
           <Feather name="help-circle" size={16} color={colors.textSecondary} />
           <Text style={styles.helpText}>Get Help</Text>
         </Pressable>

@@ -53,7 +53,7 @@ export default function EarnTab() {
       <View style={styles.headerWrap}>
         <Text style={styles.h1}>High Paying Tasks & Campaigns</Text>
       </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.segWrap}>
+      <View style={styles.segRow}>
         {(["task", "campaigns", "explore"] as Tab[]).map((t) => (
           <Pressable
             key={t}
@@ -66,7 +66,7 @@ export default function EarnTab() {
             </Text>
           </Pressable>
         ))}
-      </ScrollView>
+      </View>
 
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.xxl }}
@@ -149,8 +149,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   headerWrap: { paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.sm },
   h1: { fontFamily: fonts.heading, fontSize: 22, color: colors.textPrimary, letterSpacing: -0.3 },
-  segWrap: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, gap: 10 },
-  seg: { paddingHorizontal: 18, paddingVertical: 10, borderRadius: 100, backgroundColor: colors.surfaceVariant },
+  segRow: { flexDirection: "row", paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, gap: 8 },
+  seg: { flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: colors.surfaceVariant, alignItems: "center", justifyContent: "center" },
   segActive: { backgroundColor: colors.primary },
   segText: { fontFamily: fonts.heading, fontSize: 13, color: colors.textSecondary },
   segTextActive: { color: "#fff" },

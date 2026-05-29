@@ -4,10 +4,11 @@
 CashClick is an Expo React Native (mobile) task earning app. Users register via device-ID + mobile + username (one device = one account), then play mini-games, complete tasks/campaigns, do daily explore activities, refer friends, and withdraw earnings via UPI/Bank with admin approval.
 
 ## Stack
-- **Frontend**: Expo SDK 54 (React Native), expo-router, Plus Jakarta Sans, Feather icons, Reanimated/Animated
+- **Frontend**: Expo SDK 54 (React Native), expo-router, Plus Jakarta Sans, Feather icons, Reanimated/Animated, expo-video (animated logo + in-app tutorial player)
 - **Backend**: FastAPI + Motor (MongoDB)
 - **Ads**: react-native-google-mobile-ads (banner/interstitial/rewarded). Test ad IDs by default. Real ads activate in production builds; Expo Go shows clear placeholders.
 - **Currency**: INR (₹), 100 points = ₹1 default (admin-configurable). IST timezone for daily resets.
+- **Reward semantics**: `task.reward` is stored in ₹. On admin approval, user is credited `reward × conversion_rate` points.
 
 ## User-facing
 - **Splash + Login**: Device-ID based "Continue → Mobile + Confirm Mobile + Username (live check) + optional referral".
