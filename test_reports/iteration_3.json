@@ -1,0 +1,40 @@
+{
+  "summary": "Iteration 3 backend verification — 31 games (11 existing + 20 new) and per-game leaderboard endpoint. 46/49 tests passed (1 pre-existing data-drift failure, 3 expected skips). All iteration deliverables verified: GET /api/games returns exactly 31 games with all expected IDs and defaults (chances=10, reward_min=10, reward_max=50). GET /api/games/{id}/leaderboard supports period=today (IST midnight lower bound) and period=all, returns shape {game:{id,name,color}, period, leaderboard:[{username,total_pts,plays}]}, sorted desc by total_pts and capped at 10. Unknown game id returns 404 'Game not found'. Verified that registering a fresh user and playing rock-paper 3 times places that user in the leaderboard with plays=3 and total_pts equal to sum of received rewards. Existing chances/interstitial/watch-rewarded-cap-of-3 flows confirmed working on new game IDs (coin-flip and dice-roll). FOUND AND FIXED a critical regression: the @api_router.post('/games/watch-rewarded') decorator had been accidentally removed when the leaderboard endpoint was inserted directly above games_watch_rewarded — the function was unregistered. Re-added the decorator; watch-rewarded refill flow now works again (verified by passing TestGames::test_watch_rewarded_adds_chances, TestWatchRewardedCap::test_three_refills_then_400, and TestNewGamePlayFlow::test_watch_rewarded_cap_on_new_game).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/tasks", "issue": "Returns 2 tasks (expected 3 per SAMPLE_TASKS seed). 'Install ShopApp & Open' seed task is missing — appears to have been deleted from MongoDB historically. ensure_seed() is gated on empty collection so it never re-seeds. Not introduced by this iteration. Causes TestTasks::test_tasks_and_submit (assert len>=3) to fail."},
+      {"endpoint": "GET /api/wallet/withdraw (success path) & POST /admin/withdrawals/action (rejected)", "issue": "Session-scoped tests skip when shared user has not accumulated >= ₹10 — pre-existing behavior, covered by TestAdminDeductedStoresOriginalAmount end-to-end test."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_cashclick_backend.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Investigate why seed task 'Install ShopApp & Open' is missing from MongoDB. Either (a) make ensure_seed() upsert SAMPLE_TASKS by title like the new DEFAULT_GAMES auto-upsert, or (b) re-seed it manually so TestTasks::test_tasks_and_submit returns to green.",
+    "Consider splitting server.py (now ~1330 lines) into routers (auth, games, explore, wallet, admin) — violates the 700-line guideline."
+  ],
+  "critical_code_review_comments": [
+    "CRITICAL BUG FOUND & FIXED in /app/backend/server.py: the @api_router.post('/games/watch-rewarded') decorator on games_watch_rewarded was accidentally removed when the new /games/{game_id}/leaderboard endpoint was added directly above it. Without the decorator the watch-rewarded endpoint was a dangling async function — POST /api/games/watch-rewarded would have returned 404 in production. Re-added the decorator (line 459).",
+    "Leaderboard 'today' filter uses created_at >= IST-midnight-as-UTC-isoformat string. This relies on the fact that add_transaction also stores created_at as a UTC isoformat string, so lexical comparison works. Acceptable but fragile — if any other writer stores created_at as a BSON Date or non-isoformat, the filter will silently skip those rows. Consider standardizing on datetime objects.",
+    "Leaderboard pipeline does $limit:10 then to_list(20) — the 20 is harmless but inconsistent; reduce to to_list(10).",
+    "Leaderboard uses tag=game.name (display name) to match transactions. If admin renames a game via /admin/games-config, historical transactions tagged with the old name will be orphaned from the new leaderboard. Consider tagging by game id."
+  ],
+  "updated_files": [
+    "/app/backend/server.py (re-added missing @api_router.post('/games/watch-rewarded') decorator at line 459)",
+    "/app/backend/tests/test_cashclick_backend.py (updated TestGames::test_list_games and TestGamesCatalog to expect 31 games; added TestGamesCatalog::test_new_games_default_config, full TestGameLeaderboard class (4 tests), TestNewGamePlayFlow class (2 tests))"
+  ],
+  "success_rate": {"backend": "94% (46/49 passed, 1 unrelated pre-existing failure, 2 expected skips, 1 conditional skip)", "frontend": "not tested per request"},
+  "seed_data_creation": "Per-test fresh device_ids (catalog_*, defaults_*, lb_*, newplay_*, newref_*) and a few transactions on rock-paper, coin-flip, dice-roll. No production data modified.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "test_cashclick_backend.py is the canonical regression suite. To re-validate this iteration only: pytest backend/tests/test_cashclick_backend.py::TestGamesCatalog backend/tests/test_cashclick_backend.py::TestGameLeaderboard backend/tests/test_cashclick_backend.py::TestNewGamePlayFlow -v. The TestTasks failure is environmental (missing seed task) and predates this iteration — main agent should fix seeding or restore the task.",
+  "rca_of_issue": "Watch-rewarded 404 regression RCA: When the new leaderboard endpoint was inserted just before games_watch_rewarded in server.py, the new function block ended with 'return {...}' on line 457 immediately followed by 'async def games_watch_rewarded(...)' on line 458 — the @api_router.post('/games/watch-rewarded') decorator above games_watch_rewarded was lost in the edit. Fix: re-inserted the decorator and a blank line separator. Verified by running the watch-rewarded test suite — all three watch-rewarded tests pass."
+}

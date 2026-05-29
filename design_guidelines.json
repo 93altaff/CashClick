@@ -1,0 +1,156 @@
+{
+  "project_name": "CashClick",
+  "platform": "Expo React Native",
+  "theme_and_archetype": {
+    "archetype": "Archetype 4 (Swiss & High-Contrast) + Organic & Earthy (Modified for Fintech/Earning)",
+    "mode": "Light Theme",
+    "description": "A professional, trustworthy, and vibrant money-earning app. Avoids cheap casino vibes and purple-gradient AI slop. Uses crisp white surfaces, deep Emerald Green for trust and financial stability, and Amber Gold for rewarding moments."
+  },
+  "colors": {
+    "primary": "#059669",
+    "primary_dark": "#047857",
+    "primary_light": "#D1FAE5",
+    "secondary": "#F59E0B",
+    "secondary_dark": "#D97706",
+    "background": "#F8FAFC",
+    "surface": "#FFFFFF",
+    "surface_variant": "#F1F5F9",
+    "text_primary": "#0F172A",
+    "text_secondary": "#475569",
+    "text_tertiary": "#94A3B8",
+    "border": "#E2E8F0",
+    "border_light": "#F1F5F9",
+    "success": "#10B981",
+    "error": "#EF4444",
+    "overlay": "rgba(15, 23, 42, 0.5)"
+  },
+  "typography": {
+    "fonts_required": ["@expo-google-fonts/plus-jakarta-sans"],
+    "font_family_headings": "PlusJakartaSans_700Bold",
+    "font_family_body": "PlusJakartaSans_500Medium",
+    "font_family_regular": "PlusJakartaSans_400Regular",
+    "styles": {
+      "h1": {
+        "fontSize": 32,
+        "lineHeight": 40,
+        "fontFamily": "PlusJakartaSans_700Bold",
+        "letterSpacing": -0.5
+      },
+      "h2": {
+        "fontSize": 24,
+        "lineHeight": 32,
+        "fontFamily": "PlusJakartaSans_700Bold",
+        "letterSpacing": -0.3
+      },
+      "h3": {
+        "fontSize": 20,
+        "lineHeight": 28,
+        "fontFamily": "PlusJakartaSans_700Bold"
+      },
+      "body_large": {
+        "fontSize": 16,
+        "lineHeight": 24,
+        "fontFamily": "PlusJakartaSans_500Medium"
+      },
+      "body": {
+        "fontSize": 14,
+        "lineHeight": 20,
+        "fontFamily": "PlusJakartaSans_400Regular"
+      },
+      "small_label": {
+        "fontSize": 12,
+        "lineHeight": 16,
+        "fontFamily": "PlusJakartaSans_700Bold",
+        "textTransform": "uppercase",
+        "letterSpacing": 0.5
+      }
+    }
+  },
+  "spacing_and_layout": {
+    "screen_padding": 20,
+    "section_gap": 24,
+    "item_gap": 16,
+    "small_gap": 8,
+    "border_radius": {
+      "card": 20,
+      "button": 14,
+      "chip": 100,
+      "image": 16
+    }
+  },
+  "shadows": {
+    "light": {
+      "shadowColor": "#0F172A",
+      "shadowOffset": { "width": 0, "height": 2 },
+      "shadowOpacity": 0.05,
+      "shadowRadius": 4,
+      "elevation": 2
+    },
+    "medium": {
+      "shadowColor": "#0F172A",
+      "shadowOffset": { "width": 0, "height": 4 },
+      "shadowOpacity": 0.08,
+      "shadowRadius": 12,
+      "elevation": 4
+    },
+    "heavy_primary": {
+      "shadowColor": "#059669",
+      "shadowOffset": { "width": 0, "height": 8 },
+      "shadowOpacity": 0.2,
+      "shadowRadius": 24,
+      "elevation": 8
+    }
+  },
+  "animations_and_interactions": {
+    "micro_interactions": "All touchable elements must have an active opacity (0.7) or scale down (0.95) effect on press. Use Reanimated or Animated API for smooth spring responses.",
+    "reward_popups": "Display in the center of the screen with a spring scale animation (from 0 to 1). Add a slight rotation to coins or stars.",
+    "confetti_streak": "Use 'lottie-react-native' for confetti bursts on the Refer screen and Daily Check-in streak. Render behind the success modal.",
+    "spin_wheel": "Use React Native Animated API with a rotating interpolation. Apply `Easing.out(Easing.cubic)` for a realistic slowdown effect.",
+    "scratch_card": "Implement using a masked view or a grid of small obscured squares that reveal the underlying reward when touched."
+  },
+  "component_styles": {
+    "buttons": "Solid Emerald Green (#059669) background, White text, 14px border radius. 56px height for primary CTA. Bold text. Include `heavy_primary` shadow.",
+    "mini_game_cards": "White surface, 20px border radius, 1px solid border (#E2E8F0). Top half is the game thumbnail (16px radius top corners). Bottom half contains title, 'Play' text, and a small badge for points.",
+    "balance_card": "Gradient background or solid primary_dark (#047857) with a subtle noise/pattern. Large white text for balance, small text for INR conversion. Contains Withdraw button on the right or bottom.",
+    "bottom_tabs": "White background, floating style or standard with a top border. Active icon uses Emerald Green (#059669) with a small dot below. Inactive icon uses Slate 400.",
+    "chips": "Used for 'Amount' selection in Withdraw and 'Categories' in Wallet history. Background surface_variant (#F1F5F9), active background primary_light (#D1FAE5) with Emerald text.",
+    "text_inputs": "White background, 1px solid border (#E2E8F0), 14px radius. 56px height. Focused state changes border to Emerald Green."
+  },
+  "image_urls": {
+    "mascot": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/677c6053-346a-4c4d-be83-7d65f88bd160/images/092c331065d327e5df26d6fd9f0cf8247c5c101333adb1e369376f7d44955aab.png",
+      "description": "3D render of a cute friendly robot character holding a shiny gold coin. Use in the Profile screen saying hi, or on the empty states.",
+      "category": "mascot"
+    },
+    "gold_coins_banner": {
+      "url": "https://images.pexels.com/photos/20843727/pexels-photo-20843727.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Golden coins spilling. Use for 'High Paying Tasks' banner or Referral hero image.",
+      "category": "banner"
+    },
+    "gold_coins_stack": {
+      "url": "https://images.unsplash.com/photo-1624365168898-1f7189831f41?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwzfHxnb2xkJTIwY29pbnMlMjBmaW5hbmNlfGVufDB8fHx8MTc3OTk0NDA3NHww&ixlib=rb-4.1.0&q=85",
+      "description": "Stack of gold coins. Use for balance card background (with low opacity/overlay) or withdrawal success.",
+      "category": "background"
+    },
+    "game_pattern_bg": {
+      "url": "https://images.unsplash.com/photo-1664448288134-669f14c3ebbb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDJ8MHwxfHNlYXJjaHwyfHxtb2JpbGUlMjBnYW1lJTIwcGF0dGVybnxlbnwwfHx8fDE3Nzk5NDQwNzR8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Isometric colorful block pattern. Use as a masked background for the 'Play Games & Earn Rewards' section or game thumbnails.",
+      "category": "thumbnail"
+    },
+    "confetti_bg": {
+      "url": "https://images.pexels.com/photos/4303031/pexels-photo-4303031.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Multicolored confetti background. Use for Refer & Earn screen header background.",
+      "category": "background"
+    }
+  },
+  "instructions_to_main_agent": [
+    "DO NOT USE TAILWIND CSS. This is an Expo React Native mobile project. Use standard StyleSheet.create() for all styles.",
+    "Apply testIDs to all interactive elements using standard format: data-testid='screen-name-element-type' (e.g., data-testid='login-submit-button').",
+    "Install `@expo-google-fonts/plus-jakarta-sans` and use `useFonts` hook in App.js to load fonts before rendering.",
+    "Use standard `TouchableOpacity` or `Pressable` for buttons. Implement `Animated` or `Reanimated` for all defined micro-interactions.",
+    "For icons, install `@expo/vector-icons` (Lucide/Feather/Ionicons) or `lucide-react-native`.",
+    "For routing, use `@react-navigation/native` and `@react-navigation/bottom-tabs`.",
+    "Ensure the layout relies on Flexbox (`flex: 1`, `flexDirection: 'row'`, `justifyContent`, `alignItems`).",
+    "All images must use React Native's `<Image>` component with proper `resizeMode` (usually 'cover' or 'contain')."
+  ]
+}
