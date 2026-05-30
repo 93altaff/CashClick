@@ -109,20 +109,22 @@ export function GameShell({ game, loading, popup, onClosePopup, onWatchAd, child
       </View>
 
       <View style={styles.body}>
-        {children}
+        {game.chances_left <= 0 ? (
+          <Pressable testID="game-watch-ad-btn" style={styles.adBtnTop} onPress={onWatchAd}>
+            <Feather name="play-circle" size={18} color="#fff" />
+            <Text style={styles.adTextTop}>Watch ad — +{game.chances} chances</Text>
+          </Pressable>
+        ) : null}
+        <View style={{ flex: 1, opacity: game.chances_left <= 0 ? 0.35 : 1 }} pointerEvents={game.chances_left <= 0 ? "none" : "auto"}>
+          {children}
+        </View>
         <View style={{ marginTop: spacing.md }}>
           <AdNative testID="game-native-ad" />
         </View>
       </View>
 
       <View style={styles.footer}>
-        {scoreText ? <Text style={styles.scoreText}>{scoreText}</Text> : <View />}
-        {game.chances_left <= 0 ? (
-          <Pressable testID="game-start-btn" style={styles.adBtn} onPress={onWatchAd}>
-            <Feather name="play-circle" size={16} color={colors.primaryDark} />
-            <Text style={styles.adText}>Start Game</Text>
-          </Pressable>
-        ) : null}
+        {scoreText ? <Text style={styles.scoreText}>{scoreText}</Text> : null}
       </View>
 
       <RewardPopup
@@ -155,4 +157,6 @@ const styles = StyleSheet.create({
   scoreText: { textAlign: "center", color: colors.textSecondary, fontFamily: fonts.body },
   adBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, backgroundColor: colors.primaryLight, paddingVertical: 12, borderRadius: radius.button },
   adText: { color: colors.primaryDark, fontFamily: fonts.heading, fontSize: 13 },
+  adBtnTop: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: colors.primary, paddingVertical: 14, borderRadius: radius.button, marginBottom: spacing.md, ...shadows.medium },
+  adTextTop: { color: "#fff", fontFamily: fonts.heading, fontSize: 14 },
 });

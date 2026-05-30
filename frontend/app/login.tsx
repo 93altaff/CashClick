@@ -14,12 +14,11 @@ import LogoVideo from "@/src/components/LogoVideo";
 
 export default function Login() {
   const router = useRouter();
-  const [step, setStep] = useState<"welcome" | "form" | "restore">("welcome");
+  const [step, setStep] = useState<"welcome" | "form">("welcome");
   const [mobile, setMobile] = useState("");
   const [confirmMobile, setConfirmMobile] = useState("");
   const [username, setUsername] = useState("");
   const [referredBy, setReferredBy] = useState("");
-  const [restoreMobile, setRestoreMobile] = useState("");
   const [checking, setChecking] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const [loading, setLoading] = useState(false);
@@ -36,8 +35,23 @@ export default function Login() {
     }
   };
 
-  const onContinue = () => {
-    setStep("form");
+  const onContinue = async () => {
+    setChecking(true);
+    try {
+      const did = await getDeviceId();
+      const res = await api.get(`/auth/check-device/${encodeURIComponent(did)}`);
+      if (res.exists && res.user) {
+        await saveUser(res.user);
+        router.replace("/(tabs)");
+        return;
+      }
+      setStep("form");
+    } catch {
+      // network error -> still let them register
+      setStep("form");
+    } finally {
+      setChecking(false);
+    }
   };
 
   const onSubmit = async () => {
@@ -56,22 +70,6 @@ export default function Login() {
       router.replace("/(tabs)");
     } catch (e: any) {
       Alert.alert("Login failed", e.message || "Try again");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onRestore = async () => {
-    if (restoreMobile.length < 10) return Alert.alert("Invalid", "Enter the 10-digit mobile of your old account");
-    setLoading(true);
-    try {
-      const did = await getDeviceId();
-      const res = await api.post("/auth/restore", { new_device_id: did, mobile: restoreMobile });
-      await saveUser(res.user);
-      Alert.alert("Welcome back!", `Restored @${res.user.username}`);
-      router.replace("/(tabs)");
-    } catch (e: any) {
-      Alert.alert("Could not restore", e.message || "Try again");
     } finally {
       setLoading(false);
     }
@@ -106,41 +104,20 @@ export default function Login() {
               </View>
               <Pressable
                 testID="login-continue-btn"
-                style={({ pressed }) => [styles.primaryBtn, pressed && { opacity: 0.85 }]}
+                style={({ pressed }) => [styles.primaryBtn, checking && { opacity: 0.5 }, pressed && { opacity: 0.85 }]}
                 onPress={onContinue}
+                disabled={checking}
               >
-                <Text style={styles.primaryBtnText}>Continue</Text>
-                <Feather name="arrow-right" size={20} color="#fff" />
-              </Pressable>
-              <Text style={styles.note}>
-                Secured by device login. One account per device.
-              </Text>
-              <Pressable testID="login-restore-link" onPress={() => setStep("restore")} style={{ marginTop: 8 }}>
-                <Text style={styles.restoreLink}>Reinstalled the app? Restore your old account</Text>
-              </Pressable>
-            </View>
-          ) : step === "restore" ? (
-            <View style={{ width: "100%", marginTop: spacing.lg }}>
-              <Text style={[styles.welcome, { marginBottom: spacing.md }]}>
-                Enter the 10-digit mobile number you used before. We'll re-link your account to this device.
-              </Text>
-              <Field label="Mobile Number" value={restoreMobile} onChange={(t) => setRestoreMobile(t.replace(/\D/g, "").slice(0, 10))} placeholder="10-digit mobile" keyboard="phone-pad" testID="login-restore-mobile" />
-              <Pressable
-                testID="login-restore-submit"
-                style={({ pressed }) => [styles.primaryBtn, loading && { opacity: 0.5 }, pressed && { opacity: 0.85 }]}
-                onPress={onRestore}
-                disabled={loading}
-              >
-                {loading ? <ActivityIndicator color="#fff" /> : (
+                {checking ? <ActivityIndicator color="#fff" /> : (
                   <>
-                    <Text style={styles.primaryBtnText}>Restore Account</Text>
+                    <Text style={styles.primaryBtnText}>Continue</Text>
                     <Feather name="arrow-right" size={20} color="#fff" />
                   </>
                 )}
               </Pressable>
-              <Pressable onPress={() => setStep("welcome")} style={{ marginTop: 12, alignItems: "center" }}>
-                <Text style={styles.restoreLink}>Back</Text>
-              </Pressable>
+              <Text style={styles.note}>
+                Secured by device login. One account per device.
+              </Text>
             </View>
           ) : (
             <View style={{ width: "100%", marginTop: spacing.lg }}>
@@ -248,7 +225,6 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: { color: "#fff", fontFamily: fonts.heading, fontSize: 16 },
   note: { textAlign: "center", color: colors.textTertiary, fontFamily: fonts.regular, fontSize: 12, marginTop: 16 },
-  restoreLink: { textAlign: "center", color: colors.primary, fontFamily: fonts.heading, fontSize: 13 },
   fieldWrap: { marginTop: spacing.md },
   label: { fontFamily: fonts.body, fontSize: 12, color: colors.textSecondary, marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 },
   inputWrap: {
