@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   statValue: { fontFamily: fonts.heading, fontSize: 18, color: colors.textPrimary, marginTop: 8 },
   statLabel: { fontFamily: fonts.regular, fontSize: 10, color: colors.textSecondary, marginTop: 2, textAlign: "center" },
   manageGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.md },
-  mCard: { width: "47%", backgroundColor: colors.surface, padding: spacing.md, borderRadius: radius.image, borderWidth: 1, borderColor: colors.border, gap: 10 },
+  mCard: { width: "31%", backgroundColor: colors.surface, padding: spacing.md, borderRadius: radius.image, borderWidth: 1, borderColor: colors.border, gap: 10 },
   mIcon: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   mTitle: { fontFamily: fonts.heading, fontSize: 14, color: colors.textPrimary },
 });

@@ -47,6 +47,19 @@ export default function EarnTab() {
 
   const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
 
+  // Status priority: not-yet-submitted -> pending -> approved -> rejected; latest first within same bucket
+  const statusRank = (s?: string) => (!s ? 0 : s === "pending" ? 1 : s === "approved" ? 2 : s === "rejected" ? 3 : 0);
+  const sortByStatusLatest = (arr: any[]) =>
+    [...arr].sort((a, b) => {
+      const r = statusRank(a.my_status) - statusRank(b.my_status);
+      if (r !== 0) return r;
+      const ta = new Date(a.submitted_at || a.created_at || 0).getTime();
+      const tb = new Date(b.submitted_at || b.created_at || 0).getTime();
+      return tb - ta;
+    });
+  const sortedTasks = sortByStatusLatest(tasks);
+  const sortedCampaigns = sortByStatusLatest(campaigns);
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <TopBar username={user?.username || "..."} points={user?.points || 0} />
@@ -72,7 +85,7 @@ export default function EarnTab() {
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.xxl }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        {tab === "task" && tasks.map((t) => (
+        {tab === "task" && sortedTasks.map((t) => (
           <Pressable
             key={t.id}
             testID={`earn-task-${t.id}`}
@@ -94,7 +107,7 @@ export default function EarnTab() {
           </Pressable>
         ))}
 
-        {tab === "campaigns" && campaigns.map((c) => (
+        {tab === "campaigns" && sortedCampaigns.map((c) => (
           <Pressable
             key={c.id}
             testID={`earn-campaign-${c.id}`}
@@ -107,8 +120,12 @@ export default function EarnTab() {
             <View style={{ flex: 1 }}>
               <Text style={styles.rowTitle}>{c.title}</Text>
               <Text style={styles.rowSub}>{c.rules?.slice(0, 60)}{c.rules?.length > 60 ? "..." : ""}</Text>
+              {c.my_status ? <StatusBadge status={c.my_status} /> : null}
             </View>
-            <Feather name="chevron-right" size={20} color={colors.textTertiary} />
+            <View style={styles.rowRight}>
+              {c.external_reward ? <Text style={styles.rowReward}>{c.external_reward}</Text> : null}
+              <Feather name="chevron-right" size={20} color={colors.textTertiary} />
+            </View>
           </Pressable>
         ))}
 

@@ -89,17 +89,6 @@ export default function ProfileTab() {
           ))}
         </View>
 
-        <View style={styles.adminWrap}>
-          <Pressable testID="profile-admin-btn" style={styles.adminBtn} onPress={() => router.push("/admin/login" as any)}>
-            <Feather name="shield" size={16} color={colors.textSecondary} />
-            <Text style={styles.adminText}>Admin Login</Text>
-          </Pressable>
-          <Pressable testID="profile-logout-btn" style={styles.logoutBtn} onPress={onLogout}>
-            <Feather name="log-out" size={16} color={colors.error} />
-            <Text style={[styles.adminText, { color: colors.error }]}>Logout</Text>
-          </Pressable>
-        </View>
-
         <Text style={styles.version}>CashClick v{APP_VERSION}</Text>
       </ScrollView>
     </SafeAreaView>

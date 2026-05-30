@@ -10,7 +10,7 @@ import { colors, fonts, radius, shadows, spacing } from "@/src/theme";
 import { api } from "@/src/api";
 import { getDeviceId, saveUser } from "@/src/auth";
 import RewardPopup from "@/src/components/RewardPopup";
-import { useInterstitial, useRewarded } from "@/src/components/Ads";
+import { useInterstitial, useRewarded, AdNative } from "@/src/components/Ads";
 
 export type GameState = {
   id: string; name: string; icon: string; color: string;
@@ -110,14 +110,17 @@ export function GameShell({ game, loading, popup, onClosePopup, onWatchAd, child
 
       <View style={styles.body}>
         {children}
+        <View style={{ marginTop: spacing.md }}>
+          <AdNative testID="game-native-ad" />
+        </View>
       </View>
 
       <View style={styles.footer}>
         {scoreText ? <Text style={styles.scoreText}>{scoreText}</Text> : <View />}
         {game.chances_left <= 0 ? (
-          <Pressable testID="game-watch-ad-btn" style={styles.adBtn} onPress={onWatchAd}>
+          <Pressable testID="game-start-btn" style={styles.adBtn} onPress={onWatchAd}>
             <Feather name="play-circle" size={16} color={colors.primaryDark} />
-            <Text style={styles.adText}>Watch ad — +{game.chances} chances</Text>
+            <Text style={styles.adText}>Start Game</Text>
           </Pressable>
         ) : null}
       </View>

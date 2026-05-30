@@ -16,7 +16,7 @@ const { width: SCREEN_W } = Dimensions.get("window");
 const BANNER_W = SCREEN_W - spacing.lg * 2;
 
 type Banner = { id: string; title: string; subtitle: string; image: string; url: string; is_external: boolean };
-type Game = { id: string; name: string; icon: string; color: string; chances: number; chances_left: number; reward_min: number; reward_max: number };
+type Game = { id: string; name: string; icon: string; color: string; chances: number; chances_left: number; reward_min: number; reward_max: number; plays_today?: number };
 
 export default function HomeTab() {
   const router = useRouter();
@@ -37,7 +37,9 @@ export default function HomeTab() {
       ]);
       setUser(me); await saveUser(me);
       setBanners(b);
-      setGames(g);
+      // Sort: most-played-today desc, then name asc
+      const sorted = [...g].sort((a: Game, b: Game) => (b.plays_today || 0) - (a.plays_today || 0) || a.name.localeCompare(b.name));
+      setGames(sorted);
     } catch (e) {
       const u = await loadUser();
       if (u) setUser(u);
@@ -125,7 +127,7 @@ export default function HomeTab() {
                 <View style={{ paddingHorizontal: 8, paddingBottom: 8, paddingTop: 6 }}>
                   <Text style={styles.gameName} numberOfLines={1}>{g.name}</Text>
                   <View style={styles.gameMeta}>
-                    <Text style={styles.gameReward} numberOfLines={1}>+{g.reward_min}-{g.reward_max}</Text>
+                    <Text style={styles.gameReward} numberOfLines={1}>Upto ₹{g.reward_max}</Text>
                     <View style={[styles.chancePill, g.chances_left <= 0 && { backgroundColor: "#FEE2E2" }]}>
                       <Text style={[styles.chanceText, g.chances_left <= 0 && { color: colors.error }]}>{g.chances_left}/{g.chances}</Text>
                     </View>

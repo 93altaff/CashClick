@@ -87,7 +87,10 @@ export default function TaskDetail() {
             </Text>
           </View>
         ) : !show ? (
-          <Pressable testID="task-start-btn" style={styles.startBtn} onPress={() => setShow(true)}>
+          <Pressable testID="task-start-btn" style={styles.startBtn} onPress={() => {
+            if (task.cta_url) Linking.openURL(task.cta_url).catch(() => {});
+            setShow(true);
+          }}>
             <Text style={styles.startText}>Start Task</Text>
             <Feather name="arrow-right" size={20} color="#fff" />
           </Pressable>

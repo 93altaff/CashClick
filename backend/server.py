@@ -131,6 +131,14 @@ async def require_admin(x_admin_token: Optional[str] = Header(None)) -> bool:
     sess = await db.admin_sessions.find_one({"token": x_admin_token})
     if not sess:
         raise HTTPException(401, "Invalid admin token")
+    # 1-hour session expiry
+    try:
+        created = datetime.fromisoformat(sess.get("created_at"))
+    except Exception:
+        created = now_utc()
+    if (now_utc() - created).total_seconds() > 3600:
+        await db.admin_sessions.delete_one({"token": x_admin_token})
+        raise HTTPException(401, "Admin session expired. Please login again.")
     return True
 
 async def add_transaction(device_id: str, amount_pts: int, kind: str, tag: str, note: str = ""):
@@ -408,6 +416,37 @@ async def register(data: RegisterIn):
     }
     await db.users.insert_one(user.copy())
     user.pop("_id", None)
+    return {"ok": True, "user": user}
+
+class RestoreIn(BaseModel):
+    new_device_id: str
+    mobile: str
+
+@api_router.post("/auth/restore")
+async def restore_account(data: RestoreIn):
+    """User reinstalled the app -> bind their existing account (matched by mobile)
+    to the new device_id. Returns the user profile."""
+    mobile = data.mobile.strip()
+    new_did = data.new_device_id.strip()
+    if not new_did or not mobile or not mobile.isdigit() or len(mobile) < 10:
+        raise HTTPException(400, "Invalid mobile or device id")
+    user = await db.users.find_one({"mobile": mobile})
+    if not user:
+        raise HTTPException(404, "No account found with this mobile number")
+    # If the new device already has an account (different user), block
+    existing = await db.users.find_one({"device_id": new_did})
+    if existing and existing.get("id") != user.get("id"):
+        raise HTTPException(400, "This device is already linked to another account")
+    # Re-bind device id, propagate to all owned records
+    old_did = user["device_id"]
+    if old_did != new_did:
+        await db.users.update_one({"id": user["id"]}, {"$set": {"device_id": new_did, "last_active": now_utc().isoformat()}})
+        for coll in ("transactions", "withdrawals", "task_submissions", "game_state", "scratch_state", "spin_state", "checkin_state", "visits_state", "watch_state", "survey_state", "quiz_state", "campaign_submissions"):
+            try:
+                await db[coll].update_many({"device_id": old_did}, {"$set": {"device_id": new_did}})
+            except Exception:
+                pass
+    user = await db.users.find_one({"id": user["id"]}, {"_id": 0})
     return {"ok": True, "user": user}
 
 @api_router.get("/auth/me/{device_id}")
@@ -1113,6 +1152,7 @@ class TaskUpsertIn(BaseModel):
     reward: int
     rules: str
     tutorial_url: Optional[str] = ""
+    cta_url: Optional[str] = ""
     form_fields: List[Dict[str, Any]] = []
     status: str = "active"
 
@@ -1178,6 +1218,8 @@ class CampaignUpsertIn(BaseModel):
     title: str
     rules: str
     tutorial_url: Optional[str] = ""
+    cta_url: Optional[str] = ""
+    external_reward: Optional[str] = ""
     status: str = "active"
 
 @api_router.post("/admin/campaigns/upsert")
